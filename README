@@ -1,0 +1,26 @@
+Program:    	version & version-init
+Created by: 	Jake Humphrey
+Created Date:	9/24/2014
+
+Run setup as root to add this program to the shells PATH
+
+Description: 	
+	This program creates a version file that will be specific to a directory.
+	The version is in the format #.#.# with the numbers being: 1st=Release
+	2nd=Update, 3=patch.  To set up a versioned directory run 'version-init'.
+	This will initialize the version to 0.0.0 by default. Use 'version' to do
+	all other version operations
+	To use the version for a program, either use the output from 
+	'version -v' or parse the '.version' file located in the directory
+	
+Options:
+	-v Outputs the version
+	-s Manually sets the version
+	-r Increments the Release digit
+	-u Increments the Update digit
+	-d Removes version tracking from the folder
+	-q Suppresses output and prompts
+	No arguments increments the patch digit
+
+This program was tested with: OpenSUSE, Ubuntu
+If there are any issues with this program, contact Jake Humphrey at humphreyja@mnstate.edu

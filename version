@@ -1,0 +1,196 @@
+
+
+#!/bin/bash
+
+
+helpmsg()
+{
+	echo "Usage: version [ -v ] [ -s ] [ -d ]"
+	echo "               [ -r ] [ -u ] [ -h ]"
+	
+	if [ $1 -eq 1 ]; then
+		echo
+		echo "Description:"
+		echo "	Updates the version for the current directory."
+		echo
+		echo "Options:"
+		echo "	-v (optional) Outputs the current version of the"
+		echo "	   directory"
+		echo
+		echo "	-s (optional) (prompt) Use to manually set the version number"
+		echo
+		echo "	-d (optional) (prompt) Removes the version tracking system "
+		echo "	   from the current directory"
+		echo
+		echo "	-r (optional) (prompt) Increments the Release number or the "
+		echo "	   first number in the set of three."
+		echo
+		echo "	-u (optional) (prompt) Increments the Update number or the "
+		echo "	   second number in the set of three."
+		echo
+		echo "	-q (optional) Suppresses output and prompts."
+		echo
+		echo "	-h (optional) Outputs this message"
+		echo
+	else
+		echo "Try 'version-init -h' for more information"
+	fi
+	exit 1
+}
+
+getVersion()
+{
+	if [ -a .version ]; then
+		echo | cat .version
+		exit 0
+	else
+		echo "ERROR: Versioning for current directory is not available"
+		exit 1
+	fi
+}
+
+setVersion()
+{
+	echo "Enter a new version in format #.#.#"
+	read -p "Version: " 
+	version_out=$REPLY
+	echo $version_out
+	if [[ $version_out =~ ^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$ ]]
+	then
+		echo "Updating version from $(cat .version) to $version_out"
+		if [ $suppress -eq 0 ];then
+			read -p "Continue? [y/n]: " -n 1 -r
+			echo    
+			if [[ ! $REPLY =~ ^[Yy]$ ]]
+			then
+				echo "Exiting..."
+				exit 1
+			fi
+		fi
+		echo "$version_out" > .version
+	else
+		echo "ERROR: Invalid version entry"
+		exit 1
+	fi
+	exit 0
+}
+
+deleteVersion()
+{
+	if [ -a .version ]; then
+		if [ $suppress -eq 0 ];then
+			echo "WARNING: This will remove the versioning of this directory"
+			read -p "Continue? [y/n]: " -n 1 -r
+			echo    
+			if [[ ! $REPLY =~ ^[Yy]$ ]]
+			then
+				echo "Exiting..."
+				exit 1
+			fi
+			echo "Deleting..."
+		fi
+		rm .version
+		if ! [ -a .version ];then
+			exit 0
+		else
+			echo "ERROR: Could not remove versioning.  Do you have permission?"
+			exit 1
+		fi
+		exit
+	else
+		echo "ERROR: Versioning for current directory is not available"
+		exit 1
+	fi
+}
+
+release=0
+update=0
+suppress=0
+
+while getopts ":v :h :s :r :u :d :q" opt; do
+	case $opt in
+	v) 
+		#set this flag to output the current version of the directory
+		getVersion
+		;;
+	r)
+		release=1
+		update=0
+		;;
+	u)
+		update=1
+		release=0
+		;;
+	s)
+		setVersion
+		;;
+	d)
+		deleteVersion
+		;;
+	q)
+		suppress=1
+		;;
+	
+	h)
+		#set this flag to output the help content for this program
+		helpmsg 1
+		;;
+	\?)
+		echo "ERROR: Invalid option: -$OPTARG"
+		helpmsg 0
+		;;
+	esac
+done
+
+shift $(($OPTIND-1))
+
+if [ -a .version ]; then
+	version=$(cat .version)
+else
+	echo "ERROR: Versioning for current directory is not available"
+	echo "Use 'version-init' to set up versioning"
+	exit 1
+fi
+
+if [ $suppress -eq 0 ]; then
+	echo "Current directory version: $version" 
+fi
+version_numbers=(${version//\./ })
+
+if [ $release -eq 1 ];then
+	if [ $suppress -eq 0 ]; then
+		read -p "Set a new release? [y/n]: " -n 1 -r
+		echo    
+		if [[ ! $REPLY =~ ^[Yy]$ ]]
+		then
+			echo "Exiting..."
+			exit 1
+		fi
+	fi
+	
+	version_numbers[0]=$((version_numbers[0] + 1))
+elif [ $update -eq 1 ];then
+	if [ $suppress -eq 0 ]; then
+		read -p "Set a new update? [y/n]: " -n 1 -r
+		echo    
+		if [[ ! $REPLY =~ ^[Yy]$ ]]
+		then
+			echo "Exiting..."
+			exit 1
+		fi
+	fi
+	
+	version_numbers[1]=$((version_numbers[1] + 1))
+else
+	if [ $suppress -eq 0 ];then
+		echo "Setting a new version..."
+	fi
+	version_numbers[2]=$((version_numbers[2] + 1))
+fi
+
+
+
+version_out=$( IFS=$'.'; echo "${version_numbers[*]}" )
+
+echo "$version_out" > .version
+

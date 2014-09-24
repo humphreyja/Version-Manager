@@ -1,0 +1,12 @@
+#!/bin/bash
+#This is the setup file for the version series software.  It will copy this program into
+# /bin/ to make it a command line program to be used globally.   
+
+#requires root access.
+if [ "$(id -u)" != "0" ]; then
+	echo "ERROR: Required root access"
+	exit 1
+fi
+
+cp ./version /bin/version
+cp ./version-init /bin/version-init

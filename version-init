@@ -7,11 +7,11 @@ helpmsg()
 	if [ $1 -eq 1 ]; then
 		echo
 		echo "Description:"
-		echo "	Inisalizes version for the current directory in a"
+		echo "	Initializes version for the current directory in a"
 		echo "	three digit version code (i.e. 0.0.0)"
 		echo "	Use 'version' pkg for all other version edits"
 		echo "Options:"
-		echo "	-e (optional) Outputs the current version of the"
+		echo "	-v (optional) Outputs the current version of the"
 		echo "	   directory"
 		echo
 		echo "	-h (optional) Outputs this message"
@@ -64,13 +64,14 @@ if [ -a .version ];then
 		echo "Exiting..."
 		exit 1
 	fi
-	echo "Reinisalizing versioning for current directory..."
+	echo "Reinitializing versioning for current directory..."
+	rm .version
 else
-	echo "Inisalizing versioning for current directory..."
+	echo "Initializing versioning for current directory..."
 fi
 
 
-rm .version
+
 touch .version
 echo "0.0.0" >> .version
 

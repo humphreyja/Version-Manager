@@ -194,3 +194,8 @@ version_out=$( IFS=$'.'; echo "${version_numbers[*]}" )
 
 echo "$version_out" > .version
 
+if [ $suppress -eq 0 ]; then
+	echo "Upgrading to version: $version_out" 
+fi
+
+exit 0

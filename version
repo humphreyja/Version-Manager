@@ -152,9 +152,6 @@ else
 	exit 1
 fi
 
-if [ $suppress -eq 0 ]; then
-	echo "Current directory version: $version" 
-fi
 version_numbers=(${version//\./ })
 
 if [ $release -eq 1 ];then
@@ -194,8 +191,6 @@ version_out=$( IFS=$'.'; echo "${version_numbers[*]}" )
 
 echo "$version_out" > .version
 
-if [ $suppress -eq 0 ]; then
-	echo "Upgrading to version: $version_out" 
-fi
+echo "Software Version: $version_out" 
 
 exit 0
